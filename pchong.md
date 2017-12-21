@@ -9,6 +9,7 @@ import re
 re.compile(pattern,flags=0)
 # pattern: 编译时用的表达式字符串
 # flags 编译标志位，用于修改正则表达式的匹配方式，如：是否区分大小写，多行匹配等。
+# 这个方法的主要作用是 把一个正则匹配的表达式保存起来，到时候可以直接用这个去目标文本中查找(以编译后的格式)
 ```
 
 
@@ -21,8 +22,6 @@ re.compile(pattern,flags=0)
 | re.X/re.VERBOSE    | 该标志通过给与更灵活的格式以便将正则表达式写得更易于理解       |
 | re.U               | 根据Unicode字符集解析字符，这个标志影响\w,\W,\b,\B |
 
-
-
 #### re.compile(pattern, flags=0)
 
 ```python
@@ -34,20 +33,18 @@ result = prog.match(string)
 result = re.match(pattern, string)
 ```
 
-
-
 #### re.search(pattern, string, flags=0)
 
 re.search 函数会在字符串内查找模式匹配，直到找到第一个匹配然后返回一个对象k。
 
-k.group(0)代表整个匹配模式对应的字符串，k.group(1)代表匹配模式中的组对应的字符串
+k.group(0)代表整个匹配模式对应的字符串，k.group(1)代表匹配模式中的组（即括号中的对应的）对应的字符串
 
 如果没有匹配，则返回None。
 
 ```python
 import re
 name = "Hello,My name is kuangl,nice to meet you…"
-k = re.search(r'k(uan)gl', name) # k(uan)gl是整个对应的字符串 uan是组内对应的字符串
+k = re.search(r'k(uan)gl', name) # k(uan)gl是整个对应的字符串 uan是组内（括号内）对应的字符串
 if k:
   print k.group(0), k.group(1)
  else:
@@ -62,7 +59,7 @@ if k:
 ```python
 import re
 i = 1991
-if re.match('\d+',i): # 匹配第一个字符串是数字
+if re.match('\d+',i): # 匹配第一个字符串是数字 即1991
 	print 'is Match'
 else:
 	print 'no Match'
@@ -70,13 +67,13 @@ else:
 
 #### re.findall(pattern, string, flags=0)
 
-re.findall在目标字符串查找符合规则的字符串
+re.findall在目标字符串查找所有符合规则的字符串
 
 返回的结果是一个列表（如果有括号()分组，则只返回所有分组的列表），列表中存放的是符合规则的字符串，如果没有符合规则的字符串找到，就会返回一个空值。 
 
 ```python
-mail = 'user01@mail.com user02@mail.com user04@mail.com'#第3个故意没有尖括号
-re.findall(r'(\w+@mail.[a-z]{3})',mail)
+mail = 'user01@mail.com user02@mail.com user04@mail.com'
+re.findall(r'(\w+@mail.[a-z]{3})',mail)# \w 匹配字符(a-zA-Z0-9) + 表示0-很多个 \w+就是匹配很多个字符 [a-z]表示匹配26个英文字母{3}表示一定要匹配3个 所有[a-z]{3}表示匹配3个英文字母
 ['user01@mail.com', 'user02@mail.com', 'user04@mail.com']
 ```
 
@@ -239,3 +236,42 @@ soup.find_all("a", class_="sister")
 #  <a class="sister" href="http://example.com/tillie" id="link3">Tillie</a>]
 # 查找所有的class为sister的列表
 ```
+
+# 附表
+
+一些匹配规则
+
+| 语法    | 说明                                       |  表达式实例  |        完整匹配的字符串        |
+| ----- | ---------------------------------------- | :-----: | :--------------------: |
+| .     | 匹配任意除换行符"\n"外的字符。在DOTALL模式中也能匹配换行符       |   a.c   |        abc或acc         |
+| \     | 转义符，使后一个字符改变原来的意思。如果字符串中有字符\*需要匹配，可以私用\*或者字符串集\[\*] |  a\\.c  |          a.c           |
+| [...] | 字符集（字符类）。对应的位置可以是字符集中任意字符。[abc]或者[a-c]相同意思。第一个字符如果是^表示取相反意思的字符\[^abc]表示不是abc的其他字符 | a[bcd]e | abe       ace      ade |
+
+预定义字符集（可以写在字符集[…]中）
+
+| 语法   | 说明               | 表达式实例 | 完整匹配的字符串 |
+| ---- | ---------------- | ----- | -------- |
+| \d   | 数字:[0-9]         | a\dc  | a1c      |
+| \D   | 非数字:\[^\d]       | a\Dc  | abc      |
+| \s   | 空白字符（空格）         | a\sc  | a c      |
+| \S   | 非空白字符\[^\s]      | a\Sc  | abc      |
+| \w   | 单词字符:[A-Za-z0-9] | a\wc  | abc      |
+| \W   | 非单词字符:\[^\w]     | a\Wc  | a c      |
+
+数量词（用在字符或(...)之后）
+
+| 语法    | 说明                                       | 表达式实例    | 完整匹配的字符串     |
+| ----- | ---------------------------------------- | -------- | ------------ |
+| *     | 匹配前一个字符0或无限次                             | abc*     | ab   abcccc  |
+| +     | 匹配前一个字符1次或无限次                            | abc+     | abc   abcccc |
+| ?     | 匹配前一个字符0次或1次                             | abc?     | ab  abc      |
+| {m}   | 匹配前一个字符m次                                | ab{2}    | abbc         |
+| {m,n} | 匹配前一个字符M至n次。m和n可以省略：若省略m，则匹配0-n次；若省略n，则匹配m至无限次 | ab{1,2}c | abc abbc     |
+
+写在最后
+
+**1）数量词的贪婪模式与非贪婪模式**
+
+正则表达式通常用于在文本中查找匹配的字符串。Python里数量词默认是贪婪的（在少数语言里也可能是默认非贪婪），总是尝试匹配尽可能多的字 符；非贪婪的则相反，总是尝试匹配尽可能少的字符。例如：正则表达式”ab\*”如果用于查找”abbbc”，将找到”abbb”。而如果使用非贪婪的数量 词”ab*?”，将找到”a”。
+
+**注：我们一般使用非贪婪模式来提取。**
