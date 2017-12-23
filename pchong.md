@@ -44,10 +44,10 @@ k.group(0)代表整个匹配模式对应的字符串，k.group(1)代表匹配模
 ```python
 import re
 name = "Hello,My name is kuangl,nice to meet you…"
-k = re.search(r'k(uan)gl', name) # k(uan)gl是整个对应的字符串 uan是组内（括号内）对应的字符串
+k = re.search(r'k(uan)gl,(nic)e', name) # k(uan)gl是整个对应的字符串 uan是组内（括号内）对应的字符串,可以匹配多个括号里面的值
 if k:
-  print k.group(0), k.group(1)
- else:
+  print k.group(0), k.group(1),k.group(2)
+else:
   print "sorry, not search!"
 # kuangl uan
 ```
@@ -235,6 +235,12 @@ soup.find_all("a", class_="sister")
 #  <a class="sister" href="http://example.com/lacie" id="link2">Lacie</a>,
 #  <a class="sister" href="http://example.com/tillie" id="link3">Tillie</a>]
 # 查找所有的class为sister的列表
+for a in soup.find_all("a"):
+    print a.get("href")
+# 打印所有a标签中的href的值
+# http://example.com/elsie
+# http://example.com/lacie
+# http://example.com/tillie
 ```
 
 # 附表
@@ -243,7 +249,7 @@ soup.find_all("a", class_="sister")
 
 | 语法    | 说明                                       |  表达式实例  |        完整匹配的字符串        |
 | ----- | ---------------------------------------- | :-----: | :--------------------: |
-| .     | 匹配任意除换行符"\n"外的字符。在DOTALL模式中也能匹配换行符       |   a.c   |        abc或acc         |
+| .     | 匹配任意除换行符"\n"外的字符。在DOTALL模式中也能匹配换行符       |   a.c   | abc或acc,a1c,  a c,aMc  |
 | \     | 转义符，使后一个字符改变原来的意思。如果字符串中有字符\*需要匹配，可以私用\*或者字符串集\[\*] |  a\\.c  |          a.c           |
 | [...] | 字符集（字符类）。对应的位置可以是字符集中任意字符。[abc]或者[a-c]相同意思。第一个字符如果是^表示取相反意思的字符\[^abc]表示不是abc的其他字符 | a[bcd]e | abe       ace      ade |
 
@@ -265,7 +271,7 @@ soup.find_all("a", class_="sister")
 | *     | 匹配前一个字符0或无限次                             | abc*     | ab   abcccc  |
 | +     | 匹配前一个字符1次或无限次                            | abc+     | abc   abcccc |
 | ?     | 匹配前一个字符0次或1次                             | abc?     | ab  abc      |
-| {m}   | 匹配前一个字符m次                                | ab{2}    | abbc         |
+| {m}   | 匹配前一个字符m次                                | ab{2}    | abb          |
 | {m,n} | 匹配前一个字符M至n次。m和n可以省略：若省略m，则匹配0-n次；若省略n，则匹配m至无限次 | ab{1,2}c | abc abbc     |
 
 写在最后
